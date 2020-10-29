@@ -115,4 +115,23 @@ router.delete('/:id', (req, res) => {
     .catch(err => res.status(500).send({message: "The post could not be removed"}))
 })
 
+// PUT /api/posts/:id
+router.put('/:id', (req, res) => {
+    const {id} = req.params;
+    const changes = req.body;
+
+    if (!changes.title || !changes.contents) {
+        res.status(400).send({ errorMessage: "Please provide title and contents for the post." })
+    };
+
+    db.update(id, changes)
+    .then(updateCount => {
+        if (updateCount === 0) {
+            res.status(404).send({ message: "The post with the specified ID does not exist." })
+        }
+        res.status(200).send(changes)
+    })
+    .catch(err => res.status(500).send({ error: "The post information could not be modified." }))
+})
+
 module.exports = router;
